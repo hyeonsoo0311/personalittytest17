@@ -1,0 +1,36 @@
+import typeProfiles from './type_profiles.json';
+
+export function calculateDimensions(answers) {
+  const dim = {};
+  const keys = ['A','B','C','D','E','F','G','H','I','J'];
+  for (let i = 0; i < 10; i++) {
+    const subset = answers.slice(i * 6, (i + 1) * 6);
+    const avg = subset.reduce((a, b) => a + b, 0) / 6;
+    dim[keys[i]] = avg;
+  }
+  return dim;
+}
+
+export function getClosestType(userDim) {
+  let closestType = null;
+  let minDistance = Infinity;
+
+  for (const [type, profile] of Object.entries(typeProfiles)) {
+    let dist = 0;
+    for (const dimKey of Object.keys(userDim)) {
+      const diff = userDim[dimKey] - profile[dimKey];
+      dist += diff * diff;
+    }
+    if (dist < minDistance) {
+      minDistance = dist;
+      closestType = type;
+    }
+  }
+
+  return closestType;
+}
+
+export function calculateResultType(answers) {
+  const userDim = calculateDimensions(answers);
+  return getClosestType(userDim);
+}
